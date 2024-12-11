@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "C/C++ Runner: Debug Session",
+      "type": "lldb",
+      "request": "launch",
+      "args": [],
+      "cwd": "/Users/x/Documents/Media_ex1-2",
+      "program": "/Users/x/Documents/Media_ex1-2/build/Debug/outDebug"
+    }
+  ]
+}
