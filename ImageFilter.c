@@ -58,6 +58,11 @@ void NegativeImage(void) {
     FreePpm(pRGBOutputData);
 }
 
+//---------------------------------------------------------------------//
+// void  GrayscaleImage(void)                                          //
+//  内      容 : PPM形式の入力データを濃淡画像に変換                         //
+//  更  新  日 : 2024. 12. 11 矢野　陽大                                  //
+//---------------------------------------------------------------------//
 void GrayscaleImage(void) {
     int iWidth, iHeight, iMaxValue;   // 画像の幅，高さ，解像度
     struct RGB * pRGBInputData;       // 入力データを格納
@@ -95,6 +100,87 @@ void GrayscaleImage(void) {
     // 出力データを保存しているメモリ領域を解放
     FreePgm(piGrayOutputData);
 }
+
+//---------------------------------------------------------------------//
+// BrightnessHistogram                                                 //
+//  内      容 : PGM形式の画像から輝度値のヒストグラムを生成            //
+//               GNUPLOT用のデータファイルを出力                       //
+//---------------------------------------------------------------------//
+void BrightnessHistogram(void) {
+    int iWidth, iHeight, iMaxValue;      // 画像の幅，高さ，解像度
+    int * piInputData;                  // 入力データを格納
+    int histogram[256] = {0};           // 輝度値のヒストグラム
+    int i;                              // ループカウンタ
+
+    // ヒストグラム生成
+    printf("\n**** Brightness Histogram *****\n");
+
+    // PGM形式の入力データを読み込み
+    piInputData = ReadPgm(&iWidth, &iHeight, &iMaxValue);
+
+    // ヒストグラムの計算
+    for (i = 0; i < iWidth * iHeight; i++) {
+        if (piInputData[i] >= 0 && piInputData[i] <= iMaxValue) {
+            histogram[piInputData[i]]++;
+        }
+    }
+
+    // ヒストグラムをファイルに保存
+    FILE *output = fopen("histogram.dat", "w");
+    if (output == NULL) {
+        perror("Error opening histogram output file");
+        exit(EXIT_FAILURE);
+    }
+    for (i = 0; i <= iMaxValue; i++) {
+        fprintf(output, "%d %d\n", i, histogram[i]);
+    }
+    fclose(output);
+
+    printf("Histogram saved to histogram.dat\n");
+
+    // 入力データを解放
+    FreePgm(piInputData);
+}
+
+//---------------------------------------------------------------------//
+// BlackWhiteImage                                                     //
+//  内      容 : PGM形式の画像を指定されたしきい値で2値化                //
+//               結果を新しいPGM形式の画像ファイルに出力               //
+//---------------------------------------------------------------------//
+void BlackWhiteImage(int threshold) {
+    int iWidth, iHeight, iMaxValue;      // 画像の幅，高さ，解像度
+    int * piInputData;                  // 入力データを格納
+    int * piOutputData;                 // 2値化データを格納
+    int i;                              // ループカウンタ
+
+    // 2値化処理
+    printf("\n**** Black & White Image *****\n");
+
+    // PGM形式の入力データを読み込み
+    piInputData = ReadPgm(&iWidth, &iHeight, &iMaxValue);
+
+    // 出力データのメモリを確保
+    piOutputData = (int *)malloc(iWidth * iHeight * sizeof(int));
+    if (piOutputData == NULL) {
+        perror("Error allocating memory for output data");
+        exit(EXIT_FAILURE);
+    }
+
+    // 2値化
+    for (i = 0; i < iWidth * iHeight; i++) {
+        piOutputData[i] = (piInputData[i] >= threshold) ? iMaxValue : 0;
+    }
+
+    // 2値化画像をPGM形式で出力
+    WritePgm(piOutputData, iWidth, iHeight, iMaxValue);
+
+    printf("Binary image saved to binary_image.pgm\n");
+
+    // メモリを解放
+    FreePgm(piInputData);
+    FreePgm(piOutputData);
+}
+
 
 /*
 //---------------------------------------------------------------------//

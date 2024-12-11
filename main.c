@@ -18,6 +18,14 @@ int main(void) {
 
     GrayscaleImage();
 
+    int threshold = 128; // 仮のしきい値
+
+    // ヒストグラムの生成
+    BrightnessHistogram();
+
+    // 2値化画像の生成
+    BlackWhiteImage(threshold);
+
      // 例２）PGM形式のデータに線を描く
     // DrawLines();
 
