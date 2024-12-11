@@ -16,6 +16,8 @@ int main(void) {
     // 例１）PPM形式の入力データをネガ画像に変換
     NegativeImage();
 
+    GrayscaleImage();
+
      // 例２）PGM形式のデータに線を描く
     // DrawLines();
 

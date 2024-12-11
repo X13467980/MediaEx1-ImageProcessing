@@ -58,6 +58,44 @@ void NegativeImage(void) {
     FreePpm(pRGBOutputData);
 }
 
+void GrayscaleImage(void) {
+    int iWidth, iHeight, iMaxValue;   // 画像の幅，高さ，解像度
+    struct RGB * pRGBInputData;       // 入力データを格納
+    int * piGrayOutputData;           // グレースケールデータを格納
+    int i;                            // ループカウンタ
+
+    // 固定小数点を使用した係数（1024倍された値）
+    const int a = 307; // ≈ 0.3 * 1024
+    const int b = 614; // ≈ 0.6 * 1024
+    const int c = 103; // ≈ 0.1 * 1024（切り上げ調整済み）
+
+    // グレースケール画像
+    printf("\n**** Grayscale Image (Optimized) *****\n");
+
+    // PPM形式の入力データの読み込み
+    pRGBInputData = ReadPpm(&iWidth, &iHeight, &iMaxValue);
+
+    // グレースケールデータ（１次元）のメモリ領域の確保
+    piGrayOutputData = (int *)malloc(iWidth * iHeight * sizeof(int));
+
+    // 入力データ(pRGBInputData)から効率的にグレースケール値を計算
+    for (i = 0; i < iWidth * iHeight; i++) {
+        // グレースケール値 = (a * Red + b * Green + c * Blue) >> 10
+        piGrayOutputData[i] = (a * pRGBInputData[i].iRed +
+                               b * pRGBInputData[i].iGreen +
+                               c * pRGBInputData[i].iBlue) >> 10;
+    }
+
+    // 入力データを保存しているメモリ領域を解放
+    FreePpm(pRGBInputData);
+
+    // PGM形式のファイルに出力データを出力
+    WritePgm(piGrayOutputData, iWidth, iHeight, iMaxValue);
+
+    // 出力データを保存しているメモリ領域を解放
+    FreePgm(piGrayOutputData);
+}
+
 /*
 //---------------------------------------------------------------------//
 // 例2）                                                              //
