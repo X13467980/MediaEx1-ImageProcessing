@@ -147,17 +147,37 @@ void BrightnessHistogram(void) {
 //  内      容 : PGM形式の画像を指定されたしきい値で2値化                //
 //               結果を新しいPGM形式の画像ファイルに出力               //
 //---------------------------------------------------------------------//
-void BlackWhiteImage(int threshold) {
+void BlackWhiteImage(void) {
     int iWidth, iHeight, iMaxValue;      // 画像の幅，高さ，解像度
     int * piInputData;                  // 入力データを格納
     int * piOutputData;                 // 2値化データを格納
-    int i;                              // ループカウンタ
+    int histogram[256] = {0};           // 輝度値のヒストグラム
+    int i, total_pixels = 0, sum = 0;   // ヒストグラム計算用
+    int threshold = 128;                // しきい値（初期値）
 
     // 2値化処理
     printf("\n**** Black & White Image *****\n");
 
     // PGM形式の入力データを読み込み
     piInputData = ReadPgm(&iWidth, &iHeight, &iMaxValue);
+
+    // ヒストグラムの計算
+    for (i = 0; i < iWidth * iHeight; i++) {
+        if (piInputData[i] >= 0 && piInputData[i] <= iMaxValue) {
+            histogram[piInputData[i]]++;
+        }
+    }
+
+    // ヒストグラムを基にしきい値を計算（大津の方法などを利用可能）
+    // 現在は単純に平均輝度を使用
+    for (i = 0; i <= iMaxValue; i++) {
+        total_pixels += histogram[i];
+        sum += i * histogram[i];
+    }
+    if (total_pixels > 0) {
+        threshold = sum / total_pixels;
+    }
+    printf("Calculated threshold: %d\n", threshold);
 
     // 出力データのメモリを確保
     piOutputData = (int *)malloc(iWidth * iHeight * sizeof(int));

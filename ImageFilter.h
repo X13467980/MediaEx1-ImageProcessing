@@ -19,7 +19,7 @@
 void NegativeImage(void);
 void GrayscaleImage(void);
 void BrightnessHistogram(void);
-void BlackWhiteImage(int threshold);
+void BlackWhiteImage();
 
 
 //---------------------------------------------------------------------//
